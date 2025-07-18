@@ -61,7 +61,7 @@ class UpbitHttpClient:
         secret_key: str,
         params: Optional[Dict[str, Any]] = None,
         require_auth: bool = False,  # 인증 헤더가 필요한지 체크
-    ) -> List[Dict[str, Any]]:
+    ) -> Optional[Dict[str, Any]]:
         try:
             url = f"{self.base_url}{endpoint}"
 

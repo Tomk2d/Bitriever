@@ -4,7 +4,7 @@ import os
 import requests
 import uuid
 from urllib.parse import urlencode, unquote
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from dotenv import load_dotenv, get_key
 from datetime import datetime
 from service.upbit_service import UpbitService
@@ -12,13 +12,15 @@ import logging
 from typing import Annotated
 from fastapi import Depends
 from dependencies import get_upbit_service
+from dto.http_response import ErrorResponse, SuccessResponse
+from utils.exceptions import UpbitAPIException, AuthenticationException
 
 router = APIRouter()
 load_dotenv()
 logger = logging.getLogger(__name__)
 
 
-@router.get("/tradingHistory")
+@router.get("/allTradingHistory")
 async def fetch_trading_history(
     upbit_service: Annotated[UpbitService, Depends(get_upbit_service)]
 ):
@@ -27,11 +29,25 @@ async def fetch_trading_history(
         access_key = os.getenv("UPBIT_ACCESS_KEY", "")
         secret_key = os.getenv("UPBIT_SECRET_KEY", "")
 
-        res = upbit_service.fetch_user_trading_history(access_key, secret_key)
-        return res
+        uuids = upbit_service.fetch_all_trading_uuids(access_key, secret_key)
+
+        trading_histies = upbit_service.fetch_all_trading_history(
+            access_key, secret_key, uuids
+        )
+        return SuccessResponse(
+            data=trading_histies, message="거래 내역 조회가 완료되었습니다"
+        )
     except Exception as e:
-        logger.error(e)
-        raise e
+        logger.error(f"예상치 못한 에러: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=ErrorResponse(
+                status_code=500,
+                error_code="INTERNAL_SERVER_ERROR",
+                message="서버 내부 오류가 발생했습니다",
+                details=str(e),
+            ).dict(),
+        )
 
 
 @router.get("/order")
