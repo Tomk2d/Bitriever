@@ -1,0 +1,48 @@
+# Project Architecture
+
+## Library
+
+use following libraries for spectific functionalities. these are already installed:
+
+### AI & Language Processing
+- langchain, langchain-core, langchain-experimental, langchain-community
+- langchain-openai, langchain-anthropic, langchain-google-genai, langchain-huggingface
+- langchain-azure-ai, langchain-teddynote, langchainhub, langgraph, langsmith
+- openai, huggingface-hub, deepl, kiwipiepy, konlpy
+- llama-index-core, llama-parse, llama-index-readers-file
+
+### Data Processing & Analysis
+- pandas, rank-bm25, scikit-learn
+- torch, torchvision, faiss-cpu, open-clip-torch
+
+### Database & Cache
+- redis, chromadb, sqlalchemy
+- pymilvus, pinecone
+
+### File & Document Processing
+- pymupdf, pypdf, pdfplumber, pdfminer-six, pymupdf4llm
+- unstructured, docx2txt, rapidocr-onnxruntime
+
+### Web Framework & API
+- fastapi, uvicorn, requests
+- pyjwt, python-dotenv
+
+### Visualization & UI
+- streamlit, matplotlib, seaborn
+- jupyter, notebook
+
+### Utilities
+- pydantic, lxml, pillow, lark, arxiv, tiktoken
+- tenacity, protobuf, flashrank, nest-asyncio
+- grandalf, rouge-score, mypy, wikipedia
+
+## Directory Structure
+
+1. src: Directory containing the project's source code.
+2. src/ai-agent: Directory for AI and AI agent related components.
+3. src/app-server: WAS directory using FastAPI for the project.
+    - src/app-server/api: Directory managing APIs for app-server.
+    - src/app-server/service: Directory managing service logic for app-server.
+    - src/app-server/model: Directory managing database connection models for app-server.
+    - src/app-server/dto: Directory managing DTOs for app-server.
+4. src/streamlit: Directory for service prototype using Streamlit.
