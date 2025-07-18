@@ -7,9 +7,31 @@ from urllib.parse import urlencode, unquote
 from fastapi import APIRouter
 from dotenv import load_dotenv, get_key
 from datetime import datetime
+from service.upbit_service import UpbitService
+import logging
+from typing import Annotated
+from fastapi import Depends
+from dependencies import get_upbit_service
 
 router = APIRouter()
 load_dotenv()
+logger = logging.getLogger(__name__)
+
+
+@router.get("/tradingHistory")
+async def fetch_trading_history(
+    upbit_service: Annotated[UpbitService, Depends(get_upbit_service)]
+):
+    try:
+        # 여기 나중에 db에서 조회하는걸로 변경
+        access_key = os.getenv("UPBIT_ACCESS_KEY", "")
+        secret_key = os.getenv("UPBIT_SECRET_KEY", "")
+
+        res = upbit_service.fetch_user_trading_history(access_key, secret_key)
+        return res
+    except Exception as e:
+        logger.error(e)
+        raise e
 
 
 @router.get("/order")
