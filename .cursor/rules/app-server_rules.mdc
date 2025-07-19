@@ -1,0 +1,13 @@
+---
+globs: scr/app-server
+alwaysApply: false
+---
+
+# app-server develop rules
+
+## error handling
+1. Error handling is performed at the API level.
+2. When an error occurs at a stage other than the API, the error is thrown using raise.
+3. When an exception occurs, a new error is created by combining the function name where the exception occurred and the error information, and then thrown.
+4. Logs are output at the API level. Do not log at other stages.
+
