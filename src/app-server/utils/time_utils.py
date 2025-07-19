@@ -86,7 +86,7 @@ def get_all_trading_time_ranges(
 def get_upbit_params_with_time_range(
     start_time: datetime,
     end_time: datetime,
-    states: List[str] = None,
+    states: Optional[List[str]] = None,
     limit: int = 1000,
 ) -> dict:
     if states is None:

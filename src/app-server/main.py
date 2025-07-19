@@ -3,9 +3,51 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import os
 import importlib
+from utils.router_utils import register_routers
+from database.database_connection import db
+import logging
+from contextlib import asynccontextmanager
+
+# 로깅 설정
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """애플리케이션 생명주기 관리"""
+    # 시작 시
+    logger.info("🚀 애플리케이션 시작 중...")
+
+    try:
+        # 데이터베이스 연결 테스트
+        if db.test_connection():
+            logger.info("✅ 데이터베이스 연결 성공")
+
+            # 테이블 생성
+            db.create_tables()
+            logger.info("✅ 데이터베이스 테이블 생성 완료")
+        else:
+            logger.error("❌ 데이터베이스 연결 실패")
+            raise Exception("데이터베이스 연결에 실패했습니다")
+
+    except Exception as e:
+        logger.error(f"❌ 애플리케이션 초기화 실패: {e}")
+        raise
+
+    logger.info("✅ 애플리케이션 시작 완료")
+
+    yield
+
+    # 종료 시
+    logger.info("🛑 애플리케이션 종료 중...")
+
 
 app = FastAPI(
-    title="BIT Diary API", description="암호화폐 투자 지원을 위한 API", version="0.1.1"
+    title="BIT Diary API",
+    description="암호화폐 투자 지원을 위한 API",
+    version="0.1.1",
+    lifespan=lifespan,
 )
 
 # CORS 미들웨어 추가
@@ -17,35 +59,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-# 자동 라우터 등록 함수
-def register_routers():
-    api_dir = "api"
-
-    # api 디렉토리의 모든 파일을 스캔
-    for filename in os.listdir(api_dir):
-        if filename.endswith("_api.py"):
-            module_name = filename[:-3]
-            module_path = f"{api_dir}.{module_name}"
-
-            try:
-                module = importlib.import_module(module_path)
-
-                # router 속성이 있는지 확인
-                if hasattr(module, "router"):
-                    router = getattr(module, "router")
-                    tag = module_name.replace("_api", "").title()
-
-                    # 라우터 등록
-                    app.include_router(router, prefix="/api", tags=[tag])
-                    print(f"라우터 등록됨: {module_name}")
-
-            except Exception as e:
-                print(f"라우터 등록 실패: {module_name}, 에러: {e}")
-
-
-# 자동 라우터 등록 실행
-register_routers()
+# 자동 라우터 등록
+register_routers(app)
 
 
 @app.get("/")
