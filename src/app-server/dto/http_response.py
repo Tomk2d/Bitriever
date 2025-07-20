@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, Any
 from datetime import datetime
 
@@ -11,7 +11,7 @@ class ErrorResponse(BaseModel):
     error_code: str
     message: str
     details: Optional[Any] = None
-    timestamp: datetime = datetime.now()
+    timestamp: str = Field(default_factory=lambda: datetime.now().isoformat())
 
 
 class SuccessResponse(BaseModel):
@@ -21,4 +21,4 @@ class SuccessResponse(BaseModel):
     status_code: int = 200
     data: Any
     message: Optional[str] = None
-    timestamp: datetime = datetime.now()
+    timestamp: str = Field(default_factory=lambda: datetime.now().isoformat())

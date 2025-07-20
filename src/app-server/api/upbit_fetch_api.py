@@ -50,6 +50,29 @@ async def fetch_trading_history(
         )
 
 
+@router.get("/allCoinList")
+async def fetch_all_coin_list(
+    upbit_service: Annotated[UpbitService, Depends(get_upbit_service)]
+):
+    try:
+        coin_list = upbit_service.fetch_all_coin_list()
+
+        return SuccessResponse(
+            data=coin_list, message="모든 코인 리스트 조회가 완료되었습니다"
+        )
+    except Exception as e:
+        logger.error(f"예상치 못한 에러: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=ErrorResponse(
+                status_code=500,
+                error_code="INTERNAL_SERVER_ERROR",
+                message="서버 내부 오류가 발생했습니다",
+                details=str(e),
+            ).dict(),
+        )
+
+
 @router.get("/order")
 async def fetch_api():
 
