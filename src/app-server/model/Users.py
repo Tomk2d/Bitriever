@@ -31,6 +31,7 @@ class Users(db.Base):
     upbit_credentials = relationship(
         "UpbitCredentials", back_populates="user", uselist=False
     )
+    trading_histories = relationship("TradingHistories", back_populates="user")
 
     def __repr__(self):
         return f"<User(id={self.id}, email={self.email}, nickname={self.nickname})>"

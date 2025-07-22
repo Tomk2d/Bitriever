@@ -70,27 +70,6 @@ class UpbitService:
                 if response is None:
                     continue
 
-                print("--------------체결 내역--------------")
-                print("uuid : ", response.get("uuid"))
-                print("주문 종류 : ", response.get("side"))
-                print("주문 타입 : ", response.get("ord_type"))
-                print("코인 코드 : ", response.get("market"))
-                print("당시 가격 : ", response.get("price"))
-                print("체결된 수 : ", response.get("executed_volume"))
-                print("체결 안된 남은 수량 : ", response.get("remaining_volume"))
-                print("주문 상태 : ", response.get("state"))
-                print("체결 가격 : ", response.get("price"))
-                print("체결 수량 : ", response.get("volume"))
-                print("체결 시간 : ", response.get("created_at"))
-                print("--------------------------------")
-
-                for trade in response.get("trades", []):
-                    print("===============real 체결=================")
-                    print("체결 가격 : ", trade.get("price"))
-                    print("체결 수량 : ", trade.get("volume"))
-                    print("체결 시간 : ", trade.get("created_at"))
-                    print("=======================================")
-
                 trading_histories.append(response)
 
             return trading_histories
@@ -98,7 +77,7 @@ class UpbitService:
         except Exception as e:
             raise e
 
-    def fetch_all_coin_list(self):
+    def fetch_all_coin_list(self) -> Any:
         try:
             base_url = "https://crix-static.upbit.com/crix_master"
 
