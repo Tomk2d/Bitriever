@@ -38,6 +38,12 @@ class DatabaseConnection:
 
     def create_tables(self):
         """create all tables"""
+        # 모델들을 명시적으로 import하여 순서 보장
+        import model.Users
+        import model.Upbit_credentials
+        import model.Coins
+        import model.TradingHistories
+
         self.Base.metadata.create_all(bind=self.engine)
 
     def test_connection(self):
