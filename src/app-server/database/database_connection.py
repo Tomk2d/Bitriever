@@ -40,7 +40,7 @@ class DatabaseConnection:
         """create all tables"""
         # 모델들을 명시적으로 import하여 순서 보장
         import model.Users
-        import model.Upbit_credentials
+        import model.ExchangeCredentials
         import model.Coins
         import model.TradingHistories
 

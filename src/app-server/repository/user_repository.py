@@ -12,32 +12,51 @@ class UserRepository:
         try:
             session = db.get_session()
 
-            # 이메일 중복 검사
+            # 기존 사용자인지 확인
             existing_user = (
-                session.query(Users).filter(Users.email == user_data.email).first()
+                session.query(Users).filter(Users.id == user_data.id).first()
             )
+
             if existing_user:
-                session.close()
-                raise ValueError("이미 존재하는 이메일입니다.")
+                # 기존 사용자 업데이트 - 중복 검사 없이 업데이트
+                for key, value in user_data.__dict__.items():
+                    if (
+                        not key.startswith("_") and key != "id"
+                    ):  # SQLAlchemy 내부 속성 제외
+                        setattr(existing_user, key, value)
 
-            # 닉네임 중복 검사
-            existing_nickname = (
-                session.query(Users)
-                .filter(Users.nickname == user_data.nickname)
-                .first()
-            )
-            if existing_nickname:
-                session.close()
-                raise ValueError("이미 존재하는 닉네임입니다.")
+                session.commit()
+                session.refresh(existing_user)
 
-            # 사용자 저장
-            session.add(user_data)
-            session.commit()
-            session.refresh(user_data)  # ID 등 생성된 값들을 가져옴
+                self.logger.info(f"사용자 업데이트 완료: {existing_user.email}")
+                return existing_user
+            else:
+                # 새로운 사용자 저장 - 중복 검사 수행
+                # 이메일 중복 검사
+                email_exists = (
+                    session.query(Users).filter(Users.email == user_data.email).first()
+                )
+                if email_exists:
+                    session.close()
+                    raise ValueError("이미 존재하는 이메일입니다.")
 
-            self.logger.info(f"사용자 저장 완료: {user_data.email}")
+                # 닉네임 중복 검사
+                nickname_exists = (
+                    session.query(Users)
+                    .filter(Users.nickname == user_data.nickname)
+                    .first()
+                )
+                if nickname_exists:
+                    session.close()
+                    raise ValueError("이미 존재하는 닉네임입니다.")
 
-            return user_data
+                # 사용자 저장
+                session.add(user_data)
+                session.commit()
+                session.refresh(user_data)
+
+                self.logger.info(f"사용자 저장 완료: {user_data.email}")
+                return user_data
 
         except ValueError as e:
             raise e
