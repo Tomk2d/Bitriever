@@ -5,6 +5,7 @@ import os
 import importlib
 from utils.router_utils import register_routers
 from database.database_connection import db
+from utils.app_initializer import initialize_app
 import logging
 from contextlib import asynccontextmanager
 
@@ -20,6 +21,9 @@ async def lifespan(app: FastAPI):
     logger.info("🚀 애플리케이션 시작 중...")
 
     try:
+        # 애플리케이션 초기화 (암호화 시스템 포함)
+        initialize_app()
+
         # 데이터베이스 연결 테스트
         if db.test_connection():
             logger.info("✅ 데이터베이스 연결 성공")

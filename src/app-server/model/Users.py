@@ -1,8 +1,9 @@
 from sqlalchemy import Column, String, Text, TIMESTAMP, func, Boolean, SmallInteger
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import relationship
 from database.database_connection import db
 import uuid
+from typing import Optional, Dict, Any
 
 
 class Users(db.Base):
@@ -23,13 +24,14 @@ class Users(db.Base):
     last_trading_history_update_at = Column(TIMESTAMP)  # 거래내역 마지막 업데이트
 
     is_active = Column(Boolean, default=True)  # 휴면 계정, 탈퇴계정 여부
-    is_upbit_connect = Column(
+    is_connect_exchange = Column(
         Boolean, nullable=False, default=False
-    )  # 업비트 연동회원인지
+    )  # 거래소 연결 여부
+    connected_exchanges = Column(JSONB, default=None)  # 연결된 거래소 목록
 
-    # 관계 설정
-    upbit_credentials = relationship(
-        "UpbitCredentials", back_populates="user", uselist=False
+    # 관계 설정 - upbit_credentials를 exchange_credentials로 변경
+    exchange_credentials = relationship(
+        "ExchangeCredentials", back_populates="user", uselist=False
     )
     trading_histories = relationship("TradingHistories", back_populates="user")
 

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, EmailStr, validator, ConfigDict
-from typing import Optional
+from typing import Optional, List
 from enum import Enum
 from datetime import datetime
 
@@ -76,7 +76,10 @@ class SignupResponse(BaseModel):
     signup_type: SignupType = Field(..., description="가입 타입")
     created_at: str = Field(..., description="가입 시간")
     is_active: bool = Field(True, description="활성 상태")
-    is_upbit_connect: bool = Field(False, description="업비트 연동 여부")
+    is_connect_exchange: bool = Field(False, description="거래소 연결 여부")
+    connected_exchanges: Optional[List[str]] = Field(
+        None, description="연결된 거래소 목록"
+    )
 
     @classmethod
     def from_user(cls, user):
@@ -92,11 +95,12 @@ class SignupResponse(BaseModel):
                 else "2024-01-01T00:00:00"
             ),
             is_active=bool(user.is_active),
-            is_upbit_connect=bool(user.is_upbit_connect),
+            is_connect_exchange=bool(user.is_connect_exchange),
+            connected_exchanges=user.connected_exchanges or [],
         )
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "user_id": "123e4567-e89b-12d3-a456-426614174000",
                 "email": "user@example.com",
@@ -104,9 +108,11 @@ class SignupResponse(BaseModel):
                 "signup_type": 0,
                 "created_at": "2024-01-01T00:00:00",
                 "is_active": True,
-                "is_upbit_connect": False,
+                "is_connect_exchange": False,
+                "connected_exchanges": [],
             }
         }
+    )
 
 
 class LoginRequest(BaseModel):
@@ -115,10 +121,11 @@ class LoginRequest(BaseModel):
     email: EmailStr = Field(..., description="이메일 주소")
     password: str = Field(..., min_length=1, description="비밀번호")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {"email": "user1@example.com", "password": "12345678"}
         }
+    )
 
 
 class LoginResponse(BaseModel):
@@ -129,7 +136,10 @@ class LoginResponse(BaseModel):
     nickname: str = Field(..., description="닉네임")
     signup_type: SignupType = Field(..., description="가입 타입")
     is_active: bool = Field(..., description="활성 상태")
-    is_upbit_connect: bool = Field(..., description="업비트 연동 여부")
+    is_connect_exchange: bool = Field(..., description="거래소 연결 여부")
+    connected_exchanges: Optional[List[str]] = Field(
+        None, description="연결된 거래소 목록"
+    )
     last_login_at: Optional[str] = Field(None, description="마지막 로그인 시간")
     access_token: str = Field(..., description="액세스 토큰")
     token_type: str = Field("bearer", description="토큰 타입")
@@ -143,7 +153,8 @@ class LoginResponse(BaseModel):
             nickname=str(user.nickname),
             signup_type=SignupType(user.signup_type),
             is_active=bool(user.is_active),
-            is_upbit_connect=bool(user.is_upbit_connect),
+            is_connect_exchange=bool(user.is_connect_exchange),
+            connected_exchanges=user.connected_exchanges or [],
             last_login_at=(
                 user.last_login_at.isoformat() if user.last_login_at else None
             ),
@@ -151,20 +162,22 @@ class LoginResponse(BaseModel):
             token_type="bearer",
         )
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "user_id": "123e4567-e89b-12d3-a456-426614174000",
                 "email": "user@example.com",
                 "nickname": "testuser",
                 "signup_type": 0,
                 "is_active": True,
-                "is_upbit_connect": False,
+                "is_connect_exchange": False,
+                "connected_exchanges": [],
                 "last_login_at": "2024-01-01T00:00:00",
                 "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
                 "token_type": "bearer",
             }
         }
+    )
 
 
 class UserProfileResponse(BaseModel):
@@ -181,7 +194,10 @@ class UserProfileResponse(BaseModel):
         None, description="거래내역 마지막 업데이트"
     )
     is_active: bool = Field(..., description="활성 상태")
-    is_upbit_connect: bool = Field(..., description="업비트 연동 여부")
+    is_connect_exchange: bool = Field(..., description="거래소 연결 여부")
+    connected_exchanges: Optional[List[str]] = Field(
+        None, description="연결된 거래소 목록"
+    )
 
     @classmethod
     def from_user(cls, user):
@@ -206,11 +222,12 @@ class UserProfileResponse(BaseModel):
                 else None
             ),
             is_active=bool(user.is_active),
-            is_upbit_connect=bool(user.is_upbit_connect),
+            is_connect_exchange=bool(user.is_connect_exchange),
+            connected_exchanges=user.connected_exchanges or [],
         )
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "user_id": "123e4567-e89b-12d3-a456-426614174000",
                 "email": "user@example.com",
@@ -221,6 +238,8 @@ class UserProfileResponse(BaseModel):
                 "last_login_at": "2024-01-01T00:00:00",
                 "last_trading_history_update_at": None,
                 "is_active": True,
-                "is_upbit_connect": False,
+                "is_connect_exchange": False,
+                "connected_exchanges": [],
             }
         }
+    )
