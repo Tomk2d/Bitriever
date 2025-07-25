@@ -8,6 +8,7 @@ from sqlalchemy import (
     func,
     ForeignKey,
     UniqueConstraint,
+    CheckConstraint,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -26,14 +27,18 @@ class TradingHistories(db.Base):
         Integer, ForeignKey("coins.id", ondelete="CASCADE"), nullable=False
     )
 
-    exchange = Column(String(20), nullable=False, default="upbit")  # 거래소 이름
+    exchange_code = Column(
+        SmallInteger, nullable=False
+    )  # 1:Upbit, 2:Bithumb, 3:Binance, 4:OKX
     trade_uuid = Column(String(100), nullable=False)  # 외부 체결 고유 ID
 
     trade_type = Column(SmallInteger, nullable=False)  # 0: 매수, 1: 매도
 
     price = Column(Numeric(20, 8), nullable=False)
     quantity = Column(Numeric(20, 8), nullable=False)
-    total_price = Column(Numeric(20, 8), nullable=False)  # price * quantity
+    total_price = Column(
+        Numeric(20, 8), nullable=False
+    )  # price * quantity (수동 계산 필요)
 
     fee = Column(Numeric(20, 8), default=0)  # 수수료
     trade_time = Column(TIMESTAMP, nullable=False)  # 체결시간
@@ -43,11 +48,13 @@ class TradingHistories(db.Base):
     user = relationship("Users", back_populates="trading_histories")
     coin = relationship("Coins", back_populates="trading_histories")
 
-    # 유니크 제약조건
+    # 제약조건
     __table_args__ = (
         UniqueConstraint(
-            "user_id", "exchange", "trade_uuid", name="uq_user_exchange_trade_uuid"
+            "user_id", "exchange_code", "trade_uuid", name="uq_user_exchange_trade_uuid"
         ),
+        CheckConstraint("exchange_code IN (1, 2, 3, 4)", name="chk_exchange_code"),
+        CheckConstraint("trade_type IN (0, 1)", name="chk_trade_type"),
     )
 
     def __repr__(self):

@@ -6,7 +6,7 @@ from datetime import datetime
 import pytz
 import time
 from utils.http_client import Http_client
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 load_dotenv()
 
@@ -16,19 +16,30 @@ class UpbitService:
         self.upbit_http_client = UpbitHttpClient()
         self.logger = logging.getLogger(__name__)
 
-    def fetch_all_trading_uuids(self, access_key: str, secret_key: str):
+    def fetch_all_trading_uuids(
+        self, access_key: str, secret_key: str, start_time: Optional[datetime] = None
+    ):
         try:
-            first_time = datetime(2017, 11, 1, tzinfo=pytz.timezone("Asia/Seoul"))
+            # start_time이 None이면 기본값 사용
+            if start_time is None:
+                first_time = datetime(2017, 11, 1, tzinfo=pytz.timezone("Asia/Seoul"))
+            else:
+                # start_time이 타임존 정보가 없으면 한국 시간으로 설정
+                if start_time.tzinfo is None:
+                    first_time = pytz.timezone("Asia/Seoul").localize(start_time)
+                else:
+                    first_time = start_time
+
             current_time = get_current_korea_time()
             time_ranges = get_all_trading_time_ranges(first_time, current_time)
 
             all_uuids = []
 
-            for i, (start_time, end_time) in enumerate(time_ranges):
+            for i, (range_start, range_end) in enumerate(time_ranges):
                 params = {
                     "states[]": ["done", "cancel"],
-                    "start_time": start_time,
-                    "end_time": end_time,
+                    "start_time": range_start,
+                    "end_time": range_end,
                     "limit": 1000,
                 }
 

@@ -3,6 +3,8 @@ from typing import Dict, Any
 from model.Users import Users
 from dto.user_dto import SignupRequest, SignupResponse, LoginResponse
 import bcrypt
+from datetime import datetime
+import pytz
 
 
 class UserService:
@@ -85,3 +87,11 @@ class UserService:
         return bcrypt.checkpw(
             plain_password.encode("utf-8"), hashed_password.encode("utf-8")
         )
+
+    def update_user_trading_history_updated_at(self, user_id: str):
+        try:
+            user = self.user_repository.find_by_id(user_id)
+            setattr(user, "last_trading_history_update_at", datetime.now())
+            self.user_repository.save_user(user)
+        except Exception as e:
+            raise e

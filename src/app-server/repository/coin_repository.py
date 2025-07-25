@@ -19,3 +19,12 @@ class CoinRepository:
         except Exception as e:
             self.logger.error(f"코인 목록 저장 중 에러 발생: {e}")
             raise e
+
+    def get_all_coins(self):
+        try:
+            session = db.get_session()
+            coins = session.query(Coins).all()
+            return coins
+        except Exception as e:
+            self.logger.error(f"코인 목록 조회 중 에러 발생: {e}")
+            raise e
