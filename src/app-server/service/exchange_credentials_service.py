@@ -4,20 +4,36 @@ from model.ExchangeCredentials import (
     ExchangeCredentials,
     ExchangeProvider as ModelExchangeProvider,
 )
-from repository.exchange_credentials_repository import ExchangeCredentialsRepository
 from dto.exchange_credentials_dto import (
     ExchangeCredentialsRequest,
     ExchangeCredentialsResponse,
     ExchangeProvider as DTOExchangeProvider,
 )
-from repository.user_repository import UserRepository
 
 
 class ExchangeCredentialsService:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.credentials_repository = ExchangeCredentialsRepository()
-        self.user_repository = UserRepository()
+        self._credentials_repository = None
+        self._user_repository = None
+
+    @property
+    def credentials_repository(self):
+        if self._credentials_repository is None:
+            from repository.exchange_credentials_repository import (
+                ExchangeCredentialsRepository,
+            )
+
+            self._credentials_repository = ExchangeCredentialsRepository()
+        return self._credentials_repository
+
+    @property
+    def user_repository(self):
+        if self._user_repository is None:
+            from dependencies import get_user_repository
+
+            self._user_repository = get_user_repository()
+        return self._user_repository
 
     def save_credentials(
         self, user_id: str, request: ExchangeCredentialsRequest
@@ -142,16 +158,13 @@ class ExchangeCredentialsService:
     ) -> bool:
         """거래소 자격증명 삭제"""
         try:
-            # DTO ExchangeProvider를 Model ExchangeProvider로 변환
             model_provider = ModelExchangeProvider(exchange_provider)
 
-            # 자격증명 삭제
             success = self.credentials_repository.delete_credentials(
                 user_id, model_provider
             )
 
             if success:
-                # 사용자의 connected_exchanges에서 제거
                 user = self.user_repository.find_by_id(user_id)
                 if user:
                     provider_name = DTOExchangeProvider(exchange_provider).name

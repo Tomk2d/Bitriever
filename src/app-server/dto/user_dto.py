@@ -1,7 +1,10 @@
 from pydantic import BaseModel, Field, EmailStr, validator, ConfigDict
-from typing import Optional, List
+from typing import Optional, List, Annotated
 from enum import Enum
 from datetime import datetime
+from typing import Any
+from fastapi import Depends
+from dto.exchange_credentials_dto import ExchangeProvider
 
 
 class SignupType(int, Enum):
@@ -240,6 +243,24 @@ class UserProfileResponse(BaseModel):
                 "is_active": True,
                 "is_connect_exchange": False,
                 "connected_exchanges": [],
+            }
+        }
+    )
+
+
+class UpdateTradingHistoryRequest(BaseModel):
+    """거래내역 업데이트 요청 DTO"""
+
+    user_id: str = Field(default="", description="사용자 UUID")
+    exchange_provider_str: str = Field(
+        ..., description="거래소 제공자 (UPBIT, BITHUMB, BINANCE, OKX)"
+    )
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "user_id": "e953a0e1-5466-40b3-9207-cd86b7d95275",
+                "exchange_provider_str": "UPBIT",
             }
         }
     )

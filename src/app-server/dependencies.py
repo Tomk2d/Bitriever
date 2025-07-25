@@ -9,6 +9,8 @@ _coin_service_instance = None
 _coin_repository_instance = None
 _user_service_instance = None
 _user_repository_instance = None
+_trading_histories_service_instance = None
+_exchange_credentials_service_instance = None
 
 
 # 의존성 주입 함수들
@@ -51,3 +53,21 @@ def get_coin_repository() -> CoinRepository:
     if _coin_repository_instance is None:
         _coin_repository_instance = CoinRepository()
     return _coin_repository_instance
+
+
+def get_trading_histories_service() -> Any:
+    global _trading_histories_service_instance
+    if _trading_histories_service_instance is None:
+        from service.trading_histories_service import TradingHistoriesService
+
+        _trading_histories_service_instance = TradingHistoriesService()
+    return _trading_histories_service_instance
+
+
+def get_exchange_credentials_service() -> Any:
+    global _exchange_credentials_service_instance
+    if _exchange_credentials_service_instance is None:
+        from service.exchange_credentials_service import ExchangeCredentialsService
+
+        _exchange_credentials_service_instance = ExchangeCredentialsService()
+    return _exchange_credentials_service_instance

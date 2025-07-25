@@ -8,14 +8,10 @@ from dto.exchange_credentials_dto import (
 from service.exchange_credentials_service import ExchangeCredentialsService
 import logging
 from dto.http_response import SuccessResponse, ErrorResponse
+from dependencies import get_exchange_credentials_service
 
 router = APIRouter(prefix="/exchange-credentials", tags=["거래소 자격증명"])
 logger = logging.getLogger(__name__)
-
-
-def get_exchange_credentials_service() -> ExchangeCredentialsService:
-    """거래소 자격증명 서비스 의존성"""
-    return ExchangeCredentialsService()
 
 
 @router.post("/{user_id}")

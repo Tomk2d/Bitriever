@@ -5,6 +5,11 @@ alwaysApply: false
 
 # app-server develop rules
 
+## Project Rules
+1. You must ensure singleton behavior while preventing circular dependencies.
+2. Generally, development is done using lazy import pattern.
+
+
 ## error handling
 1. Error handling is performed at the API level.
 2. When an error occurs at a stage other than the API, the error is thrown using raise.

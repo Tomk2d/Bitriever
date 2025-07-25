@@ -99,6 +99,17 @@ uvicorn = "^0.35.0"
 pyjwt = "^2.10.1"
 requests = "^2.32.4"
 
+# 암호화 및 AWS 관련 패키지
+boto3 = "^1.34.0"
+cryptography = "^42.0.0"
+bcrypt = "^4.1.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.1"
+pytest-asyncio = "^1.1.0"
+httpx = "^0.28.1"
+pytest-cov = "^6.2.1"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

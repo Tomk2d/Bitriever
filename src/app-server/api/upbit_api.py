@@ -8,7 +8,7 @@ from dependencies import get_upbit_service, get_coin_service
 from dto.http_response import ErrorResponse, SuccessResponse
 
 
-router = APIRouter()
+router = APIRouter(prefix="/upbit")
 load_dotenv()
 logger = logging.getLogger(__name__)
 
